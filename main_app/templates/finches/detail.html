@@ -3,20 +3,58 @@
 {% block content %}
 <h1>Finch detail</h1>
 
-
-<div class="card">
-    <div class="card-content">
-        <span class="card-title">{{ finch.breed }}</span>
-        <p>Breed: {{ finch.breed }}</p>
-        <p>Habitat: {{ finch.habitat }}</p>
-        <p>Color: {{ finch.color }}</p>
-        <p>Wingspan_inches: {{ finch.wingspan_inches }}</p>
+<div class="row">
+    <div class="col s6">
+        <div class="card">
+            <div class="card-content">
+                <span class="card-title">{{ finch.breed }}</span>
+                <p>Breed: {{ finch.breed }}</p>
+                <p>Habitat: {{ finch.habitat }}</p>
+                <p>Color: {{ finch.color }}</p>
+                <p>Wingspan_inches: {{ finch.wingspan_inches }}</p>
+            </div>
+            <div class="card-action">
+                <a href="{% url 'finches_update' finch.id %}">Edit</a>
+                <a href="{% url 'finches_delete' finch.id %}">Delete</a>
+            </div>
+        </div>
     </div>
-    <div class="card-action">
-        <a href="{% url 'finches_update' finch.id %}">Edit</a>
-        <a href="{% url 'finches_delete' finch.id %}">Delete</a>
+    <div class="col s6">
+        <form action="{% url 'add_feeding' finch.id %}" method="POST">
+            {% csrf_token %}
+            {{ feeding_form.as_p }}
+            <input type="submit" value="Add Feeding" class="btn blue">
+        </form>
+        <table class="stripped">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Meal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for feeding in finch.feeding_set.all %}
+                <tr>
+                    <td>{{ feeding.date }}</td>
+                    <td>{{ feeding.get_meal_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>        
     </div>
 </div>
 
+<script>
+    const dateEl = document.getElementById('id_date');
+    const selectEl = document.getElementById('id_meal');
+    M.Datepicker.init(dateEl, {
+        format: 'yyyy-mm-dd',
+        defaultDate: new Date(),
+        setDefaultDate: true,
+        autoClose: true,
+    });
+
+    M.FormSelect.init(selectEl);
+</script>
 
 {% endblock %}
